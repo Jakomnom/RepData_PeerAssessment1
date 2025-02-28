@@ -33,7 +33,8 @@ The dataset is stored in a CSV file with 17,568 observations.
 
 Ensure the dataset is downloaded and loaded into the working environment. If the dataset is not already present, it will be downloaded and extracted automatically.
 
-```{r, echo=TRUE}
+
+```r
 # Check if the dataset exists; if not, download and extract it
 if (!file.exists("activity.csv")) {
   temp <- tempfile()
@@ -49,7 +50,8 @@ df <- read.csv("activity.csv", header = TRUE, sep = ",")
 ## What is mean total number of steps taken per day?
 To determine this, aggregate all intervals by date and sum the steps and plot.  Also, check the daily mean and median steps across all dates.
 
-```{r, echo=TRUE}
+
+```r
 # Aggregate steps by date
 totalStepsByDate <- aggregate(steps ~ date, df, sum)
 
@@ -58,17 +60,33 @@ hist(totalStepsByDate$steps,
      main = "Total Steps Each Day", 
      col = "yellow", 
      xlab = "Number of Steps")
+```
 
+![](PA1_template2_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+
+```r
 # Calculate and print mean and median
 dailyMean <- mean(totalStepsByDate$steps)
 dailyMedian <- median(totalStepsByDate$steps)
 print(paste("Daily Mean:", dailyMean))
+```
+
+```
+## [1] "Daily Mean: 10766.1886792453"
+```
+
+```r
 print(paste("Daily Median:", dailyMedian))
+```
+
+```
+## [1] "Daily Median: 10765"
 ```
 
 ## What is the average daily activity pattern?
 To determine the average daily activity pattern, aggregate the data by interval and compute the mean number of steps for each interval. The results are visualized using a time-series plot.
-```{r, echo=TRUE}
+
+```r
 # Aggregate steps by interval
 stepsByInterval <- aggregate(steps ~ interval, df, mean)
 
@@ -78,19 +96,34 @@ plot(stepsByInterval$interval, stepsByInterval$steps,
      xlab = "Interval", 
      ylab = "Average Steps", 
      main = "Average Daily Activity Pattern")
+```
 
+![](PA1_template2_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+
+```r
 # Identify the interval with the maximum number of steps
 max_interval <- stepsByInterval[which.max(stepsByInterval$steps), 1]
 print(paste("Interval with Maximum Steps:", max_interval))
 ```
 
+```
+## [1] "Interval with Maximum Steps: 835"
+```
+
 ## Imputing missing values
 Missing values (NA) are imputed by replacing them with the average number of steps for the corresponding interval across all days. For the first day (all NA), values are set to zero to align with the low activity observed on the second day.
-```{r, echo=TRUE}
+
+```r
 # Count missing values
 naCount <- sum(is.na(df$steps))
 print(paste("Number of Missing Values:", naCount))
+```
 
+```
+## [1] "Number of Missing Values: 2304"
+```
+
+```r
 # Impute missing values
 imputedData <- transform(df, 
                          steps = ifelse(is.na(steps), 
@@ -113,17 +146,33 @@ hist(totalStepsByDate$steps,
      add = TRUE)
 legend("topright", c("Imputed", "Original"), 
        col = c("green", "yellow"), lwd = 8)
+```
 
+![](PA1_template2_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
+```r
 # Calculate and print updated mean and median
 imputedMean <- mean(imputedStepsByDate$steps)
 imputedMedian <- median(imputedStepsByDate$steps)
 print(paste("Imputed Daily Mean:", imputedMean))
+```
+
+```
+## [1] "Imputed Daily Mean: 10589.6937828642"
+```
+
+```r
 print(paste("Imputed Daily Median:", imputedMedian))
+```
+
+```
+## [1] "Imputed Daily Median: 10766.1886792453"
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
 To compare activity patterns between weekdays and weekends, a new factor variable (dayFactor) is added to classify each date. The data is then aggregated and visualized using a lattice plot.
-```{r, echo=TRUE}
+
+```r
 library(lattice)
 
 # Add weekday/weekend factor
@@ -142,4 +191,6 @@ xyplot(steps ~ interval | dayFactor,
        xlab = "Interval", 
        ylab = "Average Steps")
 ```
+
+![](PA1_template2_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
 
